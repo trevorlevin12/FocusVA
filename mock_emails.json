@@ -1,0 +1,42 @@
+[
+  {
+    "gmail_message_id": "mock_001",
+    "thread_id": "thread_001",
+    "sender": "Sarah Chen <sarah@greenleafcafe.com>",
+    "subject": "Quote for window decals",
+    "body": "Hi there,\n\nI'm looking to get some window decals made for our cafe. We have three windows at the front. Could you give me a quote?\n\nThanks,\nSarah",
+    "received_at": "2026-03-25T09:15:00Z"
+  },
+  {
+    "gmail_message_id": "mock_002",
+    "thread_id": "thread_002",
+    "sender": "Mike Torres <mike@torresconstruction.com>",
+    "subject": "Revision on the truck wrap design",
+    "body": "Hey,\n\nThe proof looks great but I need to change the phone number. It should be 555-0192 not 555-0129. Also can we make the logo slightly bigger?\n\nThanks,\nMike",
+    "received_at": "2026-03-25T09:30:00Z"
+  },
+  {
+    "gmail_message_id": "mock_003",
+    "thread_id": "thread_003",
+    "sender": "Linda Park <linda@sunsetevents.com>",
+    "subject": "Proof looks good — approved",
+    "body": "Hi,\n\nJust reviewed the proof for the event banners and everything looks great. You're good to go ahead and print.\n\nThanks,\nLinda",
+    "received_at": "2026-03-25T10:00:00Z"
+  },
+  {
+    "gmail_message_id": "mock_004",
+    "thread_id": "thread_004",
+    "sender": "noreply@printsuppliesplus.com",
+    "subject": "SPECIAL OFFER: 40% off vinyl rolls this week only!",
+    "body": "Dear Print Shop Owner,\n\nDon't miss our biggest sale of the year! 40% off all vinyl rolls, laminates, and substrates. Limited time offer. Click here to shop now.\n\nPrintSuppliesPlus Team",
+    "received_at": "2026-03-25T10:30:00Z"
+  },
+  {
+    "gmail_message_id": "mock_005",
+    "thread_id": "thread_005",
+    "sender": "James Okafor <james@riseacademy.org>",
+    "subject": "Banner for graduation — need 50 pieces, 4x8 ft, by April 10",
+    "body": "Hello Focus Graphics,\n\nWe need 50 banners printed for our graduation ceremony. Each should be 4 feet by 8 feet. We need them by April 10th. They'll hang outdoors so need to be weather resistant.\n\nPlease let me know the cost.\n\nJames Okafor\nRise Academy",
+    "received_at": "2026-03-25T11:00:00Z"
+  }
+]

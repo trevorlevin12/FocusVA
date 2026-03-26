@@ -57,7 +57,7 @@ Return ONLY the JSON object, no explanation, no markdown fences."""
 
 def _thread_block(thread: list[dict] | None) -> str:
     """Format a list of thread message dicts into a readable conversation log block."""
-    if not thread:
+    if not thread or len(thread) <= 1:
         return ""
     parts = []
     for msg in thread:

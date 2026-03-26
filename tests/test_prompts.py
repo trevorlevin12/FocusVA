@@ -76,8 +76,10 @@ def test_intake_prompt_includes_thread_history():
     from prompts import intake_prompt
     thread = [
         {"sender": "Alice <alice@example.com>", "body": "I want a vehicle wrap", "received_at": "2026-03-25T10:00:00+00:00"},
+        {"sender": "Bob <bob@example.com>", "body": "Sure, tell us more details", "received_at": "2026-03-25T11:00:00+00:00"},
     ]
     questions = [{"field_name": "vehicle_details", "question_text": "What vehicle?", "required": True}]
-    result = intake_prompt("I want a vehicle wrap", {}, questions, examples=None, thread=thread)
+    result = intake_prompt("Sure, tell us more details", {}, questions, examples=None, thread=thread)
     assert "Thread history" in result
     assert "Alice" in result
+    assert "vehicle wrap" in result

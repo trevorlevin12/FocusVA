@@ -1,24 +1,23 @@
 import base64
 import json
-import os
 from email.mime.text import MIMEText
-from typing import Optional
-
 import config
 
 MOCK_EMAILS_PATH = "mock_emails.json"
 
 
 def fetch_new_emails() -> list[dict]:
-    """Returns list of email dicts. Uses mock_emails.json if Gmail not configured."""
-    if not config.GMAIL_CREDENTIALS_PATH:
+    """Returns list of email dicts. Uses mock_emails.json if not authenticated."""
+    import auth
+    if not auth.is_authenticated():
         return _load_mock_emails()
     return _fetch_from_gmail()
 
 
 def send_reply(thread_id: str, to: str, subject: str, body: str) -> None:
     """Send an in-thread reply. Prints to stdout in mock mode."""
-    if not config.GMAIL_CREDENTIALS_PATH:
+    import auth
+    if not auth.is_authenticated():
         print(f"[MOCK] Would send to {to} | thread={thread_id} | body={body[:80]}...")
         return
     _send_via_gmail(thread_id, to, subject, body)
@@ -35,23 +34,9 @@ def _load_mock_emails() -> list[dict]:
 
 
 def _get_gmail_service():
-    from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import InstalledAppFlow
+    import auth
     from googleapiclient.discovery import build
-
-    SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
-    creds: Optional[Credentials] = None
-
-    if os.path.exists(config.GMAIL_TOKEN_PATH):
-        creds = Credentials.from_authorized_user_file(config.GMAIL_TOKEN_PATH, SCOPES)
-
-    if not creds or not creds.valid:
-        flow = InstalledAppFlow.from_client_secrets_file(config.GMAIL_CREDENTIALS_PATH, SCOPES)
-        creds = flow.run_local_server(port=0)
-        with open(config.GMAIL_TOKEN_PATH, "w") as f:
-            f.write(creds.to_json())
-
-    return build("gmail", "v1", credentials=creds)
+    return build("gmail", "v1", credentials=auth.get_credentials())
 
 
 def _fetch_from_gmail() -> list[dict]:

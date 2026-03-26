@@ -5,6 +5,7 @@ import tempfile
 from unittest.mock import patch, MagicMock
 import gmail_client
 import config
+import auth
 
 
 def test_mock_mode_loads_from_json(tmp_path, monkeypatch):

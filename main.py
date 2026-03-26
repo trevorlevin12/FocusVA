@@ -148,9 +148,14 @@ def regenerate_draft(email_id: int):
         if not email:
             raise HTTPException(status_code=404, detail="Email not found")
         jd = conn.execute("SELECT data FROM job_data WHERE email_id = ?", (email_id,)).fetchone()
+        thread_rows = conn.execute(
+            "SELECT * FROM emails WHERE thread_id = ? ORDER BY received_at ASC",
+            (email["thread_id"],),
+        ).fetchall()
 
     job_data = json.loads(jd["data"]) if jd else {}
-    new_draft = pipeline.draft_response(email["body"], job_data, email["classification"])
+    thread = [dict(r) for r in thread_rows]
+    new_draft = pipeline.draft_response(email["body"], job_data, email["classification"], thread=thread)
     if new_draft is None:
         raise HTTPException(status_code=400, detail="No draft generated for this email type")
 

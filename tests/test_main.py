@@ -68,3 +68,30 @@ def test_get_email_thread_single_message(client):
     assert resp.status_code == 200
     data = resp.json()
     assert len(data["thread"]) == 1
+
+
+def test_regenerate_uses_thread(client, monkeypatch):
+    """Regenerate endpoint should fetch thread and pass it to draft_response."""
+    captured = {}
+
+    def fake_draft_response(body, job_data, classification, thread=None):
+        captured["thread"] = thread
+        return "Regenerated reply"
+
+    monkeypatch.setattr("pipeline.draft_response", fake_draft_response)
+
+    with database.get_conn() as conn:
+        older_id, newer_id = _insert_thread(conn)
+        conn.execute(
+            "INSERT INTO job_data (email_id, data) VALUES (?, ?)",
+            (newer_id, '{}'),
+        )
+        conn.execute(
+            "INSERT INTO drafts (email_id, body) VALUES (?, ?)",
+            (newer_id, "Old draft"),
+        )
+
+    resp = client.post(f"/emails/{newer_id}/regenerate")
+    assert resp.status_code == 200
+    assert captured["thread"] is not None
+    assert len(captured["thread"]) == 2

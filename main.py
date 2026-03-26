@@ -114,10 +114,16 @@ def get_email(email_id: int):
         jd = conn.execute("SELECT data FROM job_data WHERE email_id = ?", (email_id,)).fetchone()
         draft = conn.execute("SELECT * FROM drafts WHERE email_id = ?", (email_id,)).fetchone()
 
+        thread_rows = conn.execute(
+            "SELECT * FROM emails WHERE thread_id = ? ORDER BY received_at ASC",
+            (email["thread_id"],),
+        ).fetchall()
+
     return {
         "email": dict(email),
         "job_data": json.loads(jd["data"]) if jd else {},
         "draft": dict(draft) if draft else None,
+        "thread": [dict(r) for r in thread_rows],
     }
 
 

@@ -869,7 +869,8 @@ nav {
 .thread-card {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-left: 3px solid transparent;
+  border-left-width: 3px;
+  border-left-color: transparent;
   border-radius: 8px;
   overflow: hidden;
 }

@@ -124,9 +124,11 @@ def test_update_draft_not_found(client, temp_db):
 
 def test_approve_email(client, temp_db, monkeypatch):
     import gmail_client
+    import rag
     sent = []
     monkeypatch.setattr(gmail_client, "send_reply",
                         lambda *args, **kwargs: sent.append(args))
+    monkeypatch.setattr(rag, "index_pair", lambda *args: None)
 
     with database.get_conn() as conn:
         eid = _seed_email(conn)
@@ -170,3 +172,97 @@ def test_reject_email(client, temp_db):
 def test_reject_email_not_found(client):
     res = client.post("/emails/9999/reject", json={})
     assert res.status_code == 404
+
+
+# ── Auth endpoints ───────────────────────────────────────────
+
+def test_auth_status_not_connected(client, monkeypatch):
+    import auth
+    monkeypatch.setattr(auth, "is_authenticated", lambda: False)
+    res = client.get("/auth/status")
+    assert res.status_code == 200
+    assert res.json() == {"connected": False}
+
+
+def test_auth_status_connected(client, monkeypatch):
+    import auth
+    monkeypatch.setattr(auth, "is_authenticated", lambda: True)
+    res = client.get("/auth/status")
+    assert res.json() == {"connected": True}
+
+
+def test_auth_login_redirects(client, monkeypatch):
+    import auth
+    monkeypatch.setattr(auth, "get_auth_url",
+                        lambda: "https://accounts.google.com/consent?state=abc")
+    res = client.get("/auth/login", follow_redirects=False)
+    assert res.status_code == 302
+    assert "accounts.google.com" in res.headers["location"]
+
+
+def test_auth_callback_success_redirects_to_root(client, monkeypatch):
+    import auth
+    monkeypatch.setattr(auth, "exchange_code", lambda code, state: None)
+    res = client.get("/auth/callback?code=mycode&state=mystate", follow_redirects=False)
+    assert res.status_code == 302
+    assert res.headers["location"] == "/"
+
+
+def test_auth_callback_failure_redirects_with_error(client, monkeypatch):
+    import auth
+    def bad_exchange(code, state):
+        raise ValueError("bad state")
+    monkeypatch.setattr(auth, "exchange_code", bad_exchange)
+    res = client.get("/auth/callback?code=x&state=bad", follow_redirects=False)
+    assert res.status_code == 302
+    assert "auth_error=" in res.headers["location"]
+
+
+# ── Crawl endpoints ──────────────────────────────────────────
+
+def test_crawl_status_unknown_key(client):
+    res = client.get("/admin/crawl-status?key=unknown-key-xyz")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["done"] is True
+    assert data["total"] == 0
+
+
+def test_crawl_history_returns_status_key(client, monkeypatch):
+    import crawl
+    async def fake_crawl(since_date, status_key):
+        pass
+    monkeypatch.setattr(crawl, "crawl_sent_emails", fake_crawl)
+    res = client.post("/admin/crawl-history", json={"since_date": "2024-01-01"})
+    assert res.status_code == 200
+    assert "status_key" in res.json()
+
+
+# ── Poll gate ────────────────────────────────────────────────
+
+def test_poll_returns_400_when_not_authenticated(client, monkeypatch):
+    import auth
+    monkeypatch.setattr(auth, "is_authenticated", lambda: False)
+    res = client.post("/poll")
+    assert res.status_code == 400
+    assert "not connected" in res.json()["detail"].lower()
+
+
+# ── Approve with learning ────────────────────────────────────
+
+def test_approve_calls_index_pair(client, temp_db, monkeypatch):
+    import gmail_client
+    import rag
+    monkeypatch.setattr(gmail_client, "send_reply", lambda *a, **k: None)
+    indexed = []
+    monkeypatch.setattr(rag, "index_pair", lambda inquiry, response: indexed.append((inquiry, response)))
+
+    with database.get_conn() as conn:
+        eid = _seed_email(conn)
+        conn.execute("INSERT INTO drafts (email_id, body) VALUES (?, ?)", (eid, "Approved draft"))
+
+    res = client.post(f"/emails/{eid}/approve", json={"approved_by": "staff"})
+    assert res.status_code == 200
+    assert len(indexed) == 1
+    assert indexed[0][0] == "I need 50 banners"  # seeded email body
+    assert indexed[0][1] == "Approved draft"

@@ -173,6 +173,22 @@ async function loadEmails(filter) {
   }
 }
 
+// ── Thread card helper ───────────────────────────────────
+function threadCardHtml(msg, isCurrent) {
+  const name = senderName(msg.sender || '');
+  const initials = senderInitials(name);
+  const color = avatarColor(name);
+  return `
+    <div class="thread-card${isCurrent ? ' thread-card--current' : ''}">
+      <div class="thread-card-header">
+        <div class="thread-card-avatar" style="background:${color};">${escapeHtml(initials)}</div>
+        <span class="thread-card-sender" title="${escapeHtml(msg.sender || '')}">${escapeHtml(name)}</span>
+        <span class="thread-card-time">${formatDate(msg.received_at)}</span>
+      </div>
+      <div class="thread-card-body">${escapeHtml(msg.body || '')}</div>
+    </div>`;
+}
+
 // ── Detail Panel ────────────────────────────────────────────
 async function loadDetail(id) {
   currentEmailId = id;
@@ -235,22 +251,6 @@ async function loadDetail(id) {
         </div>
       </div>
     `;
-
-    // ── Thread / Conversation view ─────────────
-    function threadCardHtml(msg, isCurrent) {
-      const name = senderName(msg.sender);
-      const initials = senderInitials(name);
-      const color = avatarColor(name);
-      return `
-        <div class="thread-card${isCurrent ? ' thread-card--current' : ''}">
-          <div class="thread-card-header">
-            <div class="thread-card-avatar" style="background:${color};">${escapeHtml(initials)}</div>
-            <span class="thread-card-sender" title="${escapeHtml(msg.sender)}">${escapeHtml(name)}</span>
-            <span class="thread-card-time">${formatDate(msg.received_at)}</span>
-          </div>
-          <div class="thread-card-body">${escapeHtml(msg.body || '')}</div>
-        </div>`;
-    }
 
     const threadMessages = (thread && thread.length > 0) ? thread : [email];
     const threadCards = threadMessages

@@ -869,6 +869,7 @@ nav {
 .thread-card {
   background: var(--surface-2);
   border: 1px solid var(--border);
+  border-left: 3px solid transparent;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -931,5 +932,5 @@ nav {
   color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 0 20px 8px;
+  padding: 8px 20px 8px;
 }

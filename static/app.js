@@ -184,7 +184,7 @@ async function loadDetail(id) {
   panel.innerHTML = '<div class="loading">Loading...</div>';
 
   try {
-    const { email, job_data, draft } = await api(`/emails/${id}`);
+    const { email, job_data, draft, thread } = await api(`/emails/${id}`);
 
     const hasDraft = !!draft;
     const hasJobData = Object.keys(job_data).length > 0;
@@ -236,18 +236,31 @@ async function loadDetail(id) {
       </div>
     `;
 
-    // ── Original email collapsible ─────────────
-    const emailSection = `
-      <div class="collapsible collapsed">
-        <button class="collapsible-header" onclick="toggleSection(this)">
-          <span>Original Email</span>
-          <span class="chevron">${ICONS.chevron}</span>
-        </button>
-        <div class="collapsible-body">
-          <div class="collapsible-body-inner">
-            <div class="email-body">${escapeHtml(email.body)}</div>
+    // ── Thread / Conversation view ─────────────
+    function threadCardHtml(msg, isCurrent) {
+      const name = senderName(msg.sender);
+      const initials = senderInitials(name);
+      const color = avatarColor(name);
+      return `
+        <div class="thread-card${isCurrent ? ' thread-card--current' : ''}">
+          <div class="thread-card-header">
+            <div class="thread-card-avatar" style="background:${color};">${escapeHtml(initials)}</div>
+            <span class="thread-card-sender" title="${escapeHtml(msg.sender)}">${escapeHtml(name)}</span>
+            <span class="thread-card-time">${formatDate(msg.received_at)}</span>
           </div>
-        </div>
+          <div class="thread-card-body">${escapeHtml(msg.body || '')}</div>
+        </div>`;
+    }
+
+    const threadMessages = (thread && thread.length > 0) ? thread : [email];
+    const threadCards = threadMessages
+      .map(msg => threadCardHtml(msg, msg.id === email.id))
+      .join('');
+
+    const emailSection = `
+      <div>
+        <div class="thread-section-title">Conversation</div>
+        <div class="thread-view">${threadCards}</div>
       </div>
     `;
 

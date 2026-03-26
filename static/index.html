@@ -4,29 +4,92 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FocusVA — Focus Graphics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+  <div id="authBanner" style="display:none;" class="auth-banner">
+    <span id="authBannerMsg">Gmail not connected</span>
+    <a href="/auth/login" class="auth-banner-link">Connect Gmail</a>
+  </div>
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
         <h1>FocusVA</h1>
         <p>Focus Graphics</p>
       </div>
+
       <nav>
         <button class="tab active" data-tab="pending" data-filter="status=pending">
-          Pending
+          <span class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+              <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+            </svg>
+          </span>
+          <span>Pending</span>
         </button>
         <button class="tab" data-tab="sent" data-filter="status=sent">
-          Sent
+          <span class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </span>
+          <span>Sent</span>
         </button>
         <button class="tab" data-tab="rejected" data-filter="status=rejected">
-          Rejected
+          <span class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+          </span>
+          <span>Rejected</span>
         </button>
         <button class="tab" data-tab="spam" data-filter="spam">
-          Spam &amp; Bids
+          <span class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </span>
+          <span>Spam &amp; Bids</span>
         </button>
       </nav>
+
+      <div class="sidebar-footer">
+        <button class="tab tab-admin" data-tab="admin" onclick="showAdmin()">
+          <span class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+              <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+              <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+              <line x1="17" y1="16" x2="23" y2="16"/>
+            </svg>
+          </span>
+          <span>Job Types</span>
+        </button>
+        <button class="tab tab-admin" data-tab="settings" onclick="showSettings()">
+          <span class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </span>
+          <span>Settings</span>
+        </button>
+        <button class="btn-refresh" id="refreshBtn" onclick="pollNow()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Check Now
+        </button>
+      </div>
     </aside>
 
     <div class="email-list" id="emailList">
@@ -35,10 +98,55 @@
 
     <div class="detail-panel" id="detailPanel">
       <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+            <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+          </svg>
+        </div>
         <p>Select an email to review</p>
       </div>
     </div>
+
+    <div class="admin-panel" id="adminPanel" style="display:none;">
+      <div class="admin-header">
+        <h2>Job Types</h2>
+        <button class="btn btn-approve" onclick="showNewJobTypeForm()">+ New Job Type</button>
+      </div>
+      <div id="newJobTypeForm" style="display:none;" class="admin-new-form">
+        <input type="text" id="newJobTypeName" placeholder="Job type name (e.g. Vinyl Banners)" />
+        <input type="text" id="newJobTypeDesc" placeholder="Description (optional)" />
+        <div class="admin-form-actions">
+          <button class="btn btn-approve" onclick="createJobType()">Create</button>
+          <button class="btn btn-save" onclick="hideNewJobTypeForm()">Cancel</button>
+        </div>
+      </div>
+      <div id="jobTypeList"></div>
+    </div>
+
+    <div class="settings-panel" id="settingsPanel" style="display:none;">
+      <div class="settings-header">
+        <h2>Settings</h2>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">Gmail Account</div>
+        <div id="gmailStatus" class="settings-status">Checking...</div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-label">Import Email History</div>
+        <p class="settings-hint">Import past sent emails to seed the AI with your response style.</p>
+        <div class="settings-row">
+          <label for="crawlSince">Import emails sent since:</label>
+          <input type="date" id="crawlSince" />
+        </div>
+        <button class="btn btn-approve" onclick="startCrawl()" id="crawlBtn">Import History</button>
+        <div id="crawlProgress" style="display:none;" class="crawl-progress">
+          <div id="crawlProgressText">Starting...</div>
+        </div>
+      </div>
+    </div>
   </div>
+
   <div class="toast" id="toast"></div>
   <script src="/app.js"></script>
 </body>

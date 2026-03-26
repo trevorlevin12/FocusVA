@@ -50,3 +50,34 @@ def test_draft_prompt_with_no_missing_fields():
         []
     )
     assert "none" in prompt.lower() or "no missing" in prompt.lower() or prompt.count("missing") >= 1
+
+
+def test_draft_prompt_includes_thread_history():
+    from prompts import draft_prompt
+    thread = [
+        {"sender": "Alice <alice@example.com>", "body": "I need 100 banners", "received_at": "2026-03-25T10:00:00+00:00"},
+        {"sender": "Bob <bob@example.com>", "body": "Can you clarify size?", "received_at": "2026-03-25T11:00:00+00:00"},
+    ]
+    result = draft_prompt("I need 100 banners", {}, [], examples=None, thread=thread)
+    assert "Thread history" in result
+    assert "Alice" in result
+    assert "Can you clarify size?" in result
+
+
+def test_draft_prompt_no_thread_unchanged_structure():
+    from prompts import draft_prompt
+    result = draft_prompt("test body", {}, [], examples=None, thread=None)
+    assert "Thread history" not in result
+    # Still has the original email section
+    assert "test body" in result
+
+
+def test_intake_prompt_includes_thread_history():
+    from prompts import intake_prompt
+    thread = [
+        {"sender": "Alice <alice@example.com>", "body": "I want a vehicle wrap", "received_at": "2026-03-25T10:00:00+00:00"},
+    ]
+    questions = [{"field_name": "vehicle_details", "question_text": "What vehicle?", "required": True}]
+    result = intake_prompt("I want a vehicle wrap", {}, questions, examples=None, thread=thread)
+    assert "Thread history" in result
+    assert "Alice" in result
